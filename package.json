@@ -1,0 +1,40 @@
+{
+  "name": "api-rest-node",
+  "version": "1.0.0",
+  "description": "API REST nodejs",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sebas-94/SimpleForum-Backend-Nodejs-Mongodb.git"
+  },
+  "keywords": [
+    "mongodb",
+    "nodejs",
+    "forum",
+    "backend"
+  ],
+  "author": "Sebas Solís",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/sebas-94/SimpleForum-Backend-Nodejs-Mongodb/issues"
+  },
+  "homepage": "https://github.com/sebas-94/SimpleForum-Backend-Nodejs-Mongodb#readme",
+  "dependencies": {
+    "bcrypt-node": "^0.1.0",
+    "body-parser": "^1.19.0",
+    "connect-multiparty": "^2.2.0",
+    "express": "^4.17.1",
+    "jwt-simple": "^0.5.6",
+    "moment": "^2.29.0",
+    "mongoose": "^5.10.7",
+    "mongoose-paginate-v2": "^1.3.9",
+    "validator": "^13.1.17"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.4"
+  }
+}
