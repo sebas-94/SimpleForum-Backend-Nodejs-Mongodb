@@ -1,14 +1,16 @@
 'use strict'
 
 // Requires
-var express = require('express');
-var bodyParser = require('body-parser');
+const express = require('express');
+const bodyParser = require('body-parser');
 
 // Express
-var app = express();
+const app = express();
 
 // Routes files
-var user_routes = require('./routes/user');
+const user_routes = require('./routes/user');
+const topic_routes = require('./routes/topic');
+const comment_routes = require('./routes/comment');
 
 // Middlewares
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -19,7 +21,8 @@ app.use(bodyParser.json());
 
 // Routers overwrites
 app.use('/api', user_routes);
-
+app.use('/api', topic_routes);
+app.use('/api', comment_routes);
 
 // Test route
 app.get('/prueba', (req, res) => {

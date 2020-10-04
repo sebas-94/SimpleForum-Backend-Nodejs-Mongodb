@@ -1,29 +1,43 @@
 'use strict'
 
-var validator = require('validator');
-var bcrypt = require('bcrypt-node');
-var User = require('../models/user');
+// Libraries
+const validator = require('validator');
+const bcrypt = require('bcrypt-node');
 const jwt = require('../services/jwt');
+const fs = require('fs');
+const path = require('path');
 
-var controller = {
+// Models
+const User = require('../models/user');
 
-    probando: function (req, res) {
-        return res.status(200).send({ message: "probando" });
+
+// Controller functions
+const controller = {
+
+    test: function (req, res) {
+        return res.status(200).send({
+            message: "Test User Controller"
+        });
     },
 
-    testeando: function (req, res) {
-        return res.status(200).send({ message: "testeando" });
-    },
 
     save: function (req, res) {
         // Get parameters
         var params = req.body;
 
-        // Validate data
-        var validate_name = !validator.isEmpty(params.name);
-        var validate_surname = !validator.isEmpty(params.surname);
-        var validate_email = !validator.isEmpty(params.email) && validator.isEmail(params.email);
-        var validate_password = !validator.isEmpty(params.password);
+        // Data validate
+        try {
+            var validate_name = !validator.isEmpty(params.name);
+            var validate_surname = !validator.isEmpty(params.surname);
+            var validate_email = !validator.isEmpty(params.email) && validator.isEmail(params.email);
+            var validate_password = !validator.isEmpty(params.password);
+
+        } catch (error) {
+            return res.status(200).send({
+                message: "Empty params",
+                params
+            });
+        }
 
         // console.log(validate_name, validate_surname, validate_email, validate_password);
 
@@ -102,9 +116,18 @@ var controller = {
         // Get parameters
         var params = req.body;
 
-        // Validate data
-        var validate_email = !validator.isEmpty(params.email) && validator.isEmail(params.email);
-        var validate_password = !validator.isEmpty(params.password);
+        // Data validate
+        try {
+            var validate_email = !validator.isEmpty(params.email) && validator.isEmail(params.email);
+            var validate_password = !validator.isEmpty(params.password);
+
+        } catch (error) {
+            return res.status(200).send({
+                message: "Empty params",
+                params
+            });
+        }
+
 
         if (validate_email && validate_password) {
             // Search email user
@@ -164,7 +187,214 @@ var controller = {
             });
         }
 
-    }
+    },
+
+
+    update: function (req, res) {
+
+        // Get params
+        var params = req.body;
+
+        // Data validate
+        try {
+            var validate_name = !validator.isEmpty(params.name);
+            var validate_surname = !validator.isEmpty(params.surname);
+            var validate_email = !validator.isEmpty(params.email) && validator.isEmail(params.email);
+
+        } catch (error) {
+            return res.status(200).send({
+                message: "Empty params",
+                params
+            });
+        }
+
+
+        // Delete unnecessary properties
+        delete params.password;
+
+        // Search and update document
+        var userId = req.user.sub;
+
+        // Check if email is unique
+        if (req.user.email != params.email) {
+
+            // Search email user
+            User.findOne({ email: params.email.toLowerCase() }, (err, user) => {
+
+                if (err) {
+                    return res.status(500).send({
+                        message: "Error checking email."
+                    });
+                }
+
+                // Check user
+                if (user && user.email == params.email) {
+                    return res.status(200).send({
+                        message: "Email already exists in the database."
+                    });
+
+                } else {
+                    // Condition, update data, options, callback
+                    User.findByIdAndUpdate({ _id: userId }, params, { new: true }, (err, userUpdated) => {
+                        // Return response
+
+                        if (err) {
+                            return res.status(500).send({
+                                status: 'error',
+                                user: 'Update user error'
+                            });
+                        }
+
+                        if (!userUpdated) {
+                            return res.status(500).send({
+                                status: 'error',
+                                user: 'User not updated'
+                            });
+                        }
+
+                        return res.status(200).send({
+                            status: 'success',
+                            user: userUpdated
+                        });
+
+                    });
+                }
+
+            });
+
+
+        } else {
+            // Condition, update data, options, callback
+            User.findByIdAndUpdate({ _id: userId }, params, { new: true }, (err, userUpdated) => {
+                // Return response
+
+                if (err) {
+                    return res.status(500).send({
+                        status: 'error',
+                        user: 'Update user error'
+                    });
+                }
+
+                if (!userUpdated) {
+                    return res.status(500).send({
+                        status: 'error',
+                        user: 'User not updated'
+                    });
+                }
+
+                return res.status(200).send({
+                    status: 'success',
+                    user: userUpdated
+                });
+
+            });
+        }
+
+    },
+
+
+    uploadAvatar: function (req, res) {
+        // Config multiparty module (middleware) --> routes/user.js
+
+        // Check if file exist
+        if (Object.keys(req.files).length == 0) {
+            return res.status(404).send({
+                status: 'error',
+                message: 'Empty file'
+            });
+        }
+
+        // Get file name and file extesion
+        let file_path = req.files.file0.path;
+        let file_name = file_path.split('/')[2];
+        let file_ext = file_name.split('.')[1];
+
+        // If file extension is invalid, delete file
+        if (file_ext != 'png' && file_ext != 'jpg' && file_ext != 'jpeg' && file_ext != 'gif') {
+
+            fs.unlink(file_path, (err) => {
+                return res.status(200).send({
+                    status: 'error',
+                    message: 'Inavalid extension'
+                });
+            });
+
+        } else {
+            // Get id user
+            let userId = req.user.sub;
+
+            // Search and update document on DB
+            User.findByIdAndUpdate({ _id: userId }, { image: file_name }, { new: true }, (err, userUpdated) => {
+
+                if (err || !userUpdated) {
+                    return res.status(500).send({
+                        status: 'error',
+                        message: 'Error saving image to database',
+                    });
+                }
+
+                return res.status(200).send({
+                    status: 'success',
+                    user: userUpdated
+                });
+
+            })
+
+        }
+
+    },
+
+
+    avatar: function (req, res) {
+        let fileName = req.params.fileName;
+        let filePath = './uploads/users/' + fileName;
+
+        fs.stat(filePath, (err) => {
+            if (!err) {
+                res.sendFile(path.resolve(filePath));
+            } else {
+                return res.status(404).send({
+                    message: 'Image not found',
+                });
+            }
+        });
+    },
+
+
+    getUsers: function (req, res) {
+        User.find().exec((err, users) => {
+            if (err || !users) {
+                return res.status(404).send({
+                    status: 'error',
+                    message: 'There are no users to display'
+                });
+            }
+
+            return res.status(200).send({
+                status: 'success',
+                users
+            });
+        })
+    },
+
+
+    getUser: function (req, res) {
+        let userId = req.params.userId;
+
+        User.findById(userId).exec((err, user) => {
+            if (err || !user) {
+                return res.status(404).send({
+                    status: 'error',
+                    message: `There is no user ${userId}`
+                });
+            }
+
+            return res.status(200).send({
+                status: 'success',
+                user
+            });
+        });
+    },
 
 }
 
