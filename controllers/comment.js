@@ -127,7 +127,7 @@ const controller = {
                         topicUpdated
                     });
                 }
-            ); 
+            );
         }
 
 
@@ -135,9 +135,59 @@ const controller = {
 
 
     delete: function (req, res) {
-        return res.status(200).send({
-            message: 'Test Comment Controller'
+        // Get topicId and commentId
+        let topicId = req.params.topicId;
+        let commentId = req.params.commentId;
+
+        // Search topic
+        Topic.findById(topicId, (err, topic) => {
+            if (err) {
+                return res.status(500).send({
+                    status: 'error',
+                    message: 'Query error'
+                });
+            }
+            if (!topic) {
+                return res.status(404).send({
+                    status: 'error',
+                    message: 'Topic not found'
+                });
+            }
+
+            // Select subdocument (comment)
+            var comment = topic.comments.id(commentId);
+
+            // Delete subdocument (comment)
+            if (comment) {
+
+                comment.remove();
+
+                // Save document (topic)
+                topic.save((err) => {
+                    if (err) {
+                        return res.status(500).send({
+                            status: 'error',
+                            message: 'Error saving topic'
+                        });
+                    }
+
+                    // Return response
+                    return res.status(200).send({
+                        status: 'success',
+                        topic
+                    });
+                });
+
+            } else {
+                return res.status(404).send({
+                    status: 'error',
+                    message: 'Comment not found'
+                });
+            }
+
+
         });
+
     }
 
 
