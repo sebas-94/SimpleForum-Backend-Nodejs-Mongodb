@@ -528,7 +528,7 @@
 							]
 						},
 						"url": {
-							"raw": "http://localhost:3999/api/comment/5f786792d043dc2729af41be",
+							"raw": "http://localhost:3999/api/comment/5f79e78e33d1972f74f71613",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -537,7 +537,7 @@
 							"path": [
 								"api",
 								"comment",
-								"5f786792d043dc2729af41be"
+								"5f79e78e33d1972f74f71613"
 							]
 						}
 					},
@@ -546,26 +546,20 @@
 				{
 					"name": "Delete",
 					"request": {
-						"method": "PUT",
+						"method": "DELETE",
 						"header": [
 							{
 								"key": "Authorization",
-								"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI1ZjcwZWQzNzA2OTgwNjUzNDZmNzM1Y2EiLCJuYW1lIjoic2ViYXMiLCJlbWFpbCI6InNlYmFzQHNlYmFzLmVzIiwicm9sZSI6IlJPTEVfVVNFUiIsImltYWdlIjoiOUhFclBuazVweDZ3OG5NdWVlcThpS2YtLnBuZyIsImlhdCI6MTYwMTY1OTAxOX0.R3LV0swXfzqGLGhDnzGmzoqzlu-igq5hV9ZcWYAJn1Y",
-								"type": "text"
+								"type": "text",
+								"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI1ZjcwZWQzNzA2OTgwNjUzNDZmNzM1Y2EiLCJuYW1lIjoic2ViYXMiLCJlbWFpbCI6InNlYmFzQHNlYmFzLmVzIiwicm9sZSI6IlJPTEVfVVNFUiIsImltYWdlIjoiOUhFclBuazVweDZ3OG5NdWVlcThpS2YtLnBuZyIsImlhdCI6MTYwMTY1OTAxOX0.R3LV0swXfzqGLGhDnzGmzoqzlu-igq5hV9ZcWYAJn1Y"
 							}
 						],
 						"body": {
 							"mode": "urlencoded",
-							"urlencoded": [
-								{
-									"key": "content",
-									"value": "editado",
-									"type": "text"
-								}
-							]
+							"urlencoded": []
 						},
 						"url": {
-							"raw": "http://localhost:3999/api/comment/5f786792d043dc2729af41be",
+							"raw": "http://localhost:3999/api/comment/5f786792d043dc2729af41be/5f79e7ab33d1972f74f71614",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -574,7 +568,29 @@
 							"path": [
 								"api",
 								"comment",
-								"5f786792d043dc2729af41be"
+								"5f786792d043dc2729af41be",
+								"5f79e7ab33d1972f74f71614"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Search",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3999/api/search/java",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3999",
+							"path": [
+								"api",
+								"search",
+								"java"
 							]
 						}
 					},
