@@ -68,11 +68,31 @@ const controller = {
                                 message: 'Error saving topic'
                             });
                         }
-                        // Return response
-                        return res.status(200).send({
-                            status: 'success',
-                            topic
-                        });
+
+                        // Populate user and comments user
+                        Topic.findById(topic._id)
+                            .populate('user')
+                            .populate('comments.user')
+                            .exec((err, topic) => {
+                                if (err) {
+                                    return res.status(500).send({
+                                        status: 'error',
+                                        message: 'Query error'
+                                    });
+                                }
+                                if (!topic) {
+                                    return res.status(404).send({
+                                        status: 'error',
+                                        message: 'Topic not found'
+                                    });
+                                }
+                                // Return response
+                                return res.status(200).send({
+                                    status: 'success',
+                                    topic
+                                });
+                            });
+
                     });
                 }
 
