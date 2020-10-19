@@ -284,8 +284,45 @@ const controller = {
             });
         });
 
-    }
+    },
 
+
+    search: function (req, res) {
+        // Get string 'search'
+        let searchString = req.params.search;
+
+        // Find by parameters
+        Topic.find({
+            '$or': [
+                { 'title': { '$regex': searchString, '$options': 'i' } },
+                { 'content': { '$regex': searchString, '$options': 'i' } },
+                { 'code': { '$regex': searchString, '$options': 'i' } },
+                { 'lang': { '$regex': searchString, '$options': 'i' } }
+            ]
+        })
+            .populate('user')
+            .sort([['date', 'descending']])
+            .exec((err, topics) => {
+                if (err) {
+                    return res.status(500).send({
+                        status: 'error',
+                        message: 'Query error'
+                    });
+                }
+                if (!topics || topics.length == 0) {
+                    return res.status(404).send({
+                        status: 'error',
+                        message: 'Topics not found'
+                    });
+                }
+                // Return response
+                return res.status(200).send({
+                    status: 'success',
+                    topics
+                });
+            });
+
+    }
 
 
 };
